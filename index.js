@@ -15,6 +15,7 @@ function renderUsers() {
       <td>
         <button onclick="editUser(${index})">Editar</button>
         <button onclick="deleteUser(${index})">Eliminar</button>
+        <button onclick="markAttendance(${index})">Registrar Asistencia</button>
       </td>
     `;
     tbody.appendChild(row);
@@ -23,7 +24,21 @@ function renderUsers() {
   localStorage.setItem("users", JSON.stringify(users));
 }
 
-// Función para mostrar el historial de asistencia
+// Registrar asistencia con fecha automática
+function markAttendance(index) {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const user = users[index];
+  attendance.push({
+    name: user.name,
+    email: user.email,
+    date: today,
+    status: "Presente",
+  });
+  localStorage.setItem("attendance", JSON.stringify(attendance));
+  alert("Asistencia registrada para hoy.");
+}
+
+// Mostrar historial con campo editable de fecha
 function renderAttendanceHistory() {
   const historyDiv = document.getElementById("attendance-history");
   historyDiv.innerHTML = `
@@ -35,17 +50,23 @@ function renderAttendanceHistory() {
           <th>Email</th>
           <th>Fecha</th>
           <th>Estado</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         ${attendance
           .map(
-            (a) => `
+            (a, i) => `
           <tr>
             <td>${a.name}</td>
             <td>${a.email}</td>
-            <td>${a.date}</td>
+            <td>
+              <input type="date" value="${a.date}" onchange="editAttendanceDate(${i}, this.value)" />
+            </td>
             <td>${a.status}</td>
+            <td>
+              <button onclick="deleteAttendance(${i})">Eliminar</button>
+            </td>
           </tr>
         `
           )
@@ -55,8 +76,19 @@ function renderAttendanceHistory() {
   `;
 }
 
-// Botón para mostrar el historial
-document.getElementById("show-history").addEventListener("click", renderAttendanceHistory);
+// Editar la fecha de asistencia
+function editAttendanceDate(index, newDate) {
+  attendance[index].date = newDate;
+  localStorage.setItem("attendance", JSON.stringify(attendance));
+  renderAttendanceHistory();
+}
+
+// Eliminar registro de asistencia
+function deleteAttendance(index) {
+  attendance.splice(index, 1);
+  localStorage.setItem("attendance", JSON.stringify(attendance));
+  renderAttendanceHistory();
+}
 
 function addUser(e) {
   e.preventDefault();
@@ -89,4 +121,5 @@ function editUser(index) {
 }
 
 document.getElementById("user-form").addEventListener("submit", addUser);
+document.getElementById("show-history").addEventListener("click", renderAttendanceHistory);
 renderUsers();
