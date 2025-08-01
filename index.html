@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRUD de Usuarios</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <h1>Gestión de Usuarios</h1>
+
+  <form id="user-form">
+    <input type="text" id="name" placeholder="Nombre" required />
+    <input type="email" id="email" placeholder="Correo" required />
+    <button type="submit">Agregar Usuario</button>
+  </form>
+
+  <h2>Lista de Usuarios</h2>
+  <table id="user-table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Agrega esto en tu HTML principal -->
+  <button id="show-history">Ver historial de asistencia</button>
+  <div id="attendance-history"></div>
+
+  <script src="index.js"></script>
+</body>
+</html>
