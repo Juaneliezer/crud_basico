@@ -24,12 +24,10 @@ function renderUsers() {
   localStorage.setItem("users", JSON.stringify(users));
 }
 
-// Registrar asistencia con fecha automática
+// Registrar asistencia evitando duplicados
 function markAttendance(index) {
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
   const user = users[index];
-
-  // Verifica si ya existe asistencia para este usuario hoy
   const alreadyMarked = attendance.some(
     (a) => a.email === user.email && a.date === today
   );
@@ -37,7 +35,6 @@ function markAttendance(index) {
     alert("La asistencia de hoy ya fue registrada para este empleado.");
     return;
   }
-
   attendance.push({
     name: user.name,
     email: user.email,
@@ -46,16 +43,16 @@ function markAttendance(index) {
   });
   localStorage.setItem("attendance", JSON.stringify(attendance));
   alert("Asistencia registrada para hoy.");
-  renderAttendanceHistory(); // <-- Actualiza la vista solo si se registró
+  renderAttendanceHistory();
 }
 
-// Mostrar historial con campo editable de fecha
+// Mostrar historial de asistencia
 function renderAttendanceHistory(filteredAttendance = null) {
   const historyDiv = document.getElementById("attendance-history");
   const data = filteredAttendance || attendance;
   historyDiv.innerHTML = `
     <h2>Historial de Asistencia</h2>
-    <table>
+    <table border="1">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -88,7 +85,7 @@ function renderAttendanceHistory(filteredAttendance = null) {
   `;
 }
 
-// Editar la fecha de asistencia
+// Editar fecha de asistencia
 function editAttendanceDate(index, newDate) {
   attendance[index].date = newDate;
   localStorage.setItem("attendance", JSON.stringify(attendance));
@@ -162,13 +159,34 @@ function clearAttendanceFilter() {
   renderAttendanceHistory();
 }
 
+// Exportar historial a CSV
+function exportAttendanceCSV() {
+  if (attendance.length === 0) {
+    alert("No hay registros de asistencia para exportar.");
+    return;
+  }
+  const header = ["Nombre", "Email", "Fecha", "Estado"];
+  const rows = attendance.map(a => [a.name, a.email, a.date, a.status]);
+  let csvContent = header.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "historial_asistencia.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 // Eventos
 document.getElementById("user-form").addEventListener("submit", addUser);
 document.getElementById("show-history").addEventListener("click", renderAttendanceHistory);
 document.getElementById("apply-filter").addEventListener("click", filterAttendance);
 document.getElementById("clear-filter").addEventListener("click", clearAttendanceFilter);
+document.getElementById("export-csv").addEventListener("click", exportAttendanceCSV);
 
 // Inicialización
 renderUsers();
 renderAttendanceHistory();
-
