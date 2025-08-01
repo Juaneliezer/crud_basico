@@ -2,13 +2,13 @@ let users = JSON.parse(localStorage.getItem("users")) || [];
 let attendance = JSON.parse(localStorage.getItem("attendance")) || [];
 let editIndex = null;
 
+// Renderiza la lista de usuarios
 function renderUsers() {
   const tbody = document.querySelector("#user-table tbody");
   tbody.innerHTML = "";
 
   users.forEach((user, index) => {
     const row = document.createElement("tr");
-
     row.innerHTML = `
       <td>${user.name}</td>
       <td>${user.email}</td>
@@ -39,11 +39,12 @@ function markAttendance(index) {
 }
 
 // Mostrar historial con campo editable de fecha
-function renderAttendanceHistory() {
+function renderAttendanceHistory(filteredAttendance = null) {
   const historyDiv = document.getElementById("attendance-history");
+  const data = filteredAttendance || attendance;
   historyDiv.innerHTML = `
     <h2>Historial de Asistencia</h2>
-    <table border="1">
+    <table>
       <thead>
         <tr>
           <th>Nombre</th>
@@ -54,7 +55,7 @@ function renderAttendanceHistory() {
         </tr>
       </thead>
       <tbody>
-        ${attendance
+        ${data
           .map(
             (a, i) => `
           <tr>
@@ -90,6 +91,7 @@ function deleteAttendance(index) {
   renderAttendanceHistory();
 }
 
+// Agregar o editar usuario
 function addUser(e) {
   e.preventDefault();
   const name = document.getElementById("name").value.trim();
@@ -108,11 +110,14 @@ function addUser(e) {
   renderUsers();
 }
 
+// Eliminar usuario
 function deleteUser(index) {
   users.splice(index, 1);
+  localStorage.setItem("users", JSON.stringify(users));
   renderUsers();
 }
 
+// Editar usuario
 function editUser(index) {
   const user = users[index];
   document.getElementById("name").value = user.name;
@@ -120,6 +125,37 @@ function editUser(index) {
   editIndex = index;
 }
 
+// Filtro de asistencia
+function filterAttendance() {
+  const nameValue = document.getElementById("filter-name").value.trim().toLowerCase();
+  const dateValue = document.getElementById("filter-date").value;
+  let filtered = attendance;
+
+  if (nameValue) {
+    filtered = filtered.filter(
+      a =>
+        a.name.toLowerCase().includes(nameValue) ||
+        a.email.toLowerCase().includes(nameValue)
+    );
+  }
+  if (dateValue) {
+    filtered = filtered.filter(a => a.date === dateValue);
+  }
+  renderAttendanceHistory(filtered);
+}
+
+// Limpiar filtro
+function clearAttendanceFilter() {
+  document.getElementById("filter-name").value = "";
+  document.getElementById("filter-date").value = "";
+  renderAttendanceHistory();
+}
+
+// Eventos
 document.getElementById("user-form").addEventListener("submit", addUser);
 document.getElementById("show-history").addEventListener("click", renderAttendanceHistory);
+document.getElementById("apply-filter").addEventListener("click", filterAttendance);
+document.getElementById("clear-filter").addEventListener("click", clearAttendanceFilter);
+
+// Inicialización
 renderUsers();
