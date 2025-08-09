@@ -49,6 +49,28 @@ function markAttendance(index) {
 function renderAttendanceHistory(filteredAttendance = null) {
   const historyDiv = document.getElementById("attendance-history");
   const data = filteredAttendance || attendance;
+  let rowsHtml = "";
+  if (data.length === 0) {
+    rowsHtml = `<tr><td colspan="5" style="text-align:center;">No se encontraron resultados</td></tr>`;
+  } else {
+    rowsHtml = data
+      .map(
+        (a, i) => `
+      <tr>
+        <td>${a.name}</td>
+        <td>${a.email}</td>
+        <td>
+          <input type="date" value="${a.date}" onchange="editAttendanceDate(${i}, this.value)" />
+        </td>
+        <td>${a.status}</td>
+        <td>
+          <button onclick="deleteAttendance(${i})">Eliminar</button>
+        </td>
+      </tr>
+    `
+      )
+      .join("");
+  }
   historyDiv.innerHTML = `
     <h2>Historial de Asistencia</h2>
     <table border="1">
@@ -62,23 +84,7 @@ function renderAttendanceHistory(filteredAttendance = null) {
         </tr>
       </thead>
       <tbody>
-        ${data
-          .map(
-            (a, i) => `
-          <tr>
-            <td>${a.name}</td>
-            <td>${a.email}</td>
-            <td>
-              <input type="date" value="${a.date}" onchange="editAttendanceDate(${i}, this.value)" />
-            </td>
-            <td>${a.status}</td>
-            <td>
-              <button onclick="deleteAttendance(${i})">Eliminar</button>
-            </td>
-          </tr>
-        `
-          )
-          .join("")}
+        ${rowsHtml}
       </tbody>
     </table>
   `;
@@ -87,6 +93,12 @@ function renderAttendanceHistory(filteredAttendance = null) {
 
 
 function editAttendanceDate(index, newDate) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (!newDate || newDate > today) {
+    alert("La fecha no puede estar vacía ni ser futura.");
+    renderAttendanceHistory();
+    return;
+  }
   attendance[index].date = newDate;
   localStorage.setItem("attendance", JSON.stringify(attendance));
   renderAttendanceHistory();
@@ -106,7 +118,10 @@ function addUser(e) {
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
 
-  if (!name || !email) return;
+  if (!name || !email) {
+    alert("Todos los campos son obligatorios.");
+    return;
+  }
 
   if (editIndex === null) {
     users.push({ name, email });
@@ -160,7 +175,7 @@ function clearAttendanceFilter() {
   renderAttendanceHistory();
 }
 
-// Exportar historial a CSV
+
 function exportAttendanceCSV() {
   if (attendance.length === 0) {
     alert("No hay registros de asistencia para exportar.");
@@ -181,7 +196,7 @@ function exportAttendanceCSV() {
   URL.revokeObjectURL(url);
 }
 
-// Login básico (usuario: admin, contraseña: admin123)
+// Validar login
 document.addEventListener("DOMContentLoaded", function() {
   const loginForm = document.getElementById("login-form");
   if (loginForm) {
@@ -190,11 +205,17 @@ document.addEventListener("DOMContentLoaded", function() {
       const username = document.getElementById("login-username").value.trim();
       const password = document.getElementById("login-password").value.trim();
       const errorDiv = document.getElementById("login-error");
-      // Usuario y contraseña fijos para demo
+      if (!username || !password) {
+        errorDiv.textContent = "Credenciales incorrectas";
+        errorDiv.style.display = "block";
+        return;
+      }
       if (username === "admin" && password === "admin123") {
         document.getElementById("login-container").style.display = "none";
         document.getElementById("main-content").style.display = "block";
+        errorDiv.style.display = "none";
       } else {
+        errorDiv.textContent = "Credenciales incorrectas";
         errorDiv.style.display = "block";
       }
     });
