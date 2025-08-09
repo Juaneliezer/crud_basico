@@ -7,38 +7,50 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <h1>Gestión de Usuarios</h1>
-
-  <form id="user-form">
-    <input type="text" id="name" placeholder="Nombre" required />
-    <input type="email" id="email" placeholder="Correo" required />
-    <button type="submit">Agregar Usuario</button>
-  </form>
-
-  <h2>Lista de Usuarios</h2>
-  <table id="user-table">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
- 
-  <button id="show-history">Ver historial de asistencia</button>
-  <div id="attendance-history"></div>
-
-  <div id="attendance-filters" style="width:90%;margin:0 auto 16px auto;display:flex;gap:12px;justify-content:center;">
-    <input type="text" id="filter-name" placeholder="Filtrar por nombre o email" />
-    <input type="date" id="filter-date" />
-    <button id="apply-filter">Filtrar</button>
-    <button id="clear-filter">Limpiar</button>
+  <div id="login-container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:#f6f8fa;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10;">
+    <form id="login-form" style="background:#fff;padding:32px 24px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:16px;min-width:260px;">
+      <h2 style="margin:0 0 8px 0;text-align:center;">Iniciar Sesión</h2>
+      <input type="text" id="login-username" placeholder="Usuario" required />
+      <input type="password" id="login-password" placeholder="Contraseña" required />
+      <button type="submit">Entrar</button>
+      <div id="login-error" style="display:none"></div>
+    </form>
   </div>
-  <button id="export-csv" style="background:#4299e1;color:#fff;margin:8px auto;display:block;">Exportar historial a CSV</button>
 
-  <script src="index.js"></script>
+  <div id="main-content" style="display:none;">
+    <h1>Gestión de Usuarios</h1>
+
+    <form id="user-form">
+      <input type="text" id="name" placeholder="Nombre" required />
+      <input type="email" id="email" placeholder="Correo" required />
+      <button type="submit">Agregar Usuario</button>
+    </form>
+
+    <h2>Lista de Usuarios</h2>
+    <table id="user-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+   
+    <button id="show-history">Ver historial de asistencia</button>
+    <div id="attendance-history"></div>
+
+    <div id="attendance-filters" style="width:90%;margin:0 auto 16px auto;display:flex;gap:12px;justify-content:center;">
+      <input type="text" id="filter-name" placeholder="Filtrar por nombre o email" />
+      <input type="date" id="filter-date" />
+      <button id="apply-filter">Filtrar</button>
+      <button id="clear-filter">Limpiar</button>
+    </div>
+    <button id="export-csv" style="background:#4299e1;color:#fff;margin:8px auto;display:block;">Exportar historial a CSV</button>
+
+    <script src="index.js"></script>
+  </div>
 </body>
 </html>
